@@ -7,7 +7,8 @@ import {
   Activity, FileText, Users, Loader2, Send,
   Stethoscope, TrendingUp, Scale, Cpu, GraduationCap,
   X, Upload, ClipboardCheck, BarChart3, GitBranch,
-  Layers, Target, Microscope, BookOpen,
+  Layers, Target, Microscope, BookOpen, ScanSearch,
+  RefreshCw, Fingerprint, AlertTriangle, Sparkles,
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { InstitutionRibbon } from '@/components/institution-logos';
@@ -35,47 +36,62 @@ const STEPS: {
 }[] = [
   {
     num: '01', title: 'Ingest & scope', icon: Upload, tag: 'Data onboarding',
-    desc: 'Send model outputs, evaluation benchmarks, or raw corpora. We design the annotation schema with you.',
+    desc: 'Send model outputs, benchmarks, or raw corpora. We co-design the annotation schema, rubric, evaluation dimensions, and annotator allocation with your team.',
     detail: {
       heading: 'Data Onboarding',
-      intro: 'We don\'t just take your data and run. Every engagement starts with a scoping call where we align on taxonomy, edge-case definitions, and success metrics before a single label is placed.',
+      intro: 'Every engagement starts with a scoping call where we align on taxonomy, edge-case definitions, evaluation dimensions, annotator depth, and success metrics — before a single label is placed.',
       points: [
-        { icon: Layers, label: 'Format-agnostic intake', text: 'JSONL, Parquet, CSV, PDF corpora, API exports — we normalize everything into our internal pipeline. No reformatting on your end.' },
-        { icon: GitBranch, label: 'Schema co-design', text: 'Our ontology team builds custom annotation guidelines with you — Likert scales, pairwise preference, span-level tagging, or multi-dimensional rubrics. We iterate until the guideline document passes a pilot round with ≥0.85 inter-annotator agreement.' },
-        { icon: Shield, label: 'Security & compliance', text: 'Data lands in SOC 2 Type II compliant infrastructure. HIPAA BAA and mutual NDA executed before any data transfer. All annotators sign per-project confidentiality agreements.' },
-        { icon: Target, label: 'Pilot calibration', text: 'Before full annotation begins, we run a 50–100 sample pilot. Annotators are calibrated against gold-standard labels and each other. Only annotators who pass the calibration threshold proceed.' },
+        { icon: Layers, label: 'Format-agnostic intake', text: 'JSONL, Parquet, CSV, PDF corpora, HuggingFace Datasets, API exports — we normalize everything into our internal pipeline via RawEval Ingest\u2122. No reformatting on your end.' },
+        { icon: GitBranch, label: 'Rubric & ontology co-design', text: 'Our ontology team builds custom annotation guidelines with you — Likert scales, pairwise preference ranking, span-level tagging, multi-dimensional rubrics, or DPO preference pairs. We iterate until the guideline document passes a pilot round with \u22650.85 inter-annotator agreement.' },
+        { icon: Users, label: 'Flexible annotator allocation', text: 'You define the depth. Single-expert review for straightforward labeling, 3\u20135 annotators for multi-blind consensus, 7+ for high-stakes safety or regulatory tasks. Per-task annotator count is fully configurable — our Workbench\u2122 dynamically allocates from the qualified pool based on your schema.' },
+        { icon: Target, label: 'Pilot calibration', text: 'Before full annotation begins, we run a 50\u2013100 sample pilot. Annotators are calibrated against gold-standard labels and each other. Only annotators who clear the calibration threshold proceed to production tasks.' },
       ],
-      footnote: 'Average onboarding time: 3–5 business days from data receipt to first annotated batch.',
+      footnote: 'Average onboarding time: 3\u20135 business days from data receipt to first annotated batch.',
     },
   },
   {
-    num: '02', title: 'Expert annotation', icon: ClipboardCheck, tag: 'Multi-pass evaluation',
-    desc: 'Domain PhDs evaluate through structured rubrics — multi-annotator, calibrated, with real-time disagreement resolution.',
+    num: '02', title: 'Expert annotation', icon: ClipboardCheck, tag: 'Workbench\u2122',
+    desc: 'Domain experts annotate through RawEval Workbench\u2122 — single-expert, multi-blind, or tiered review. You choose the depth; we match the expertise.',
     detail: {
-      heading: 'How We Annotate',
-      intro: 'This is where we\'re fundamentally different. Every sample passes through a multi-stage pipeline designed for research-grade reliability — not crowdworker speed.',
+      heading: 'RawEval Workbench\u2122',
+      intro: 'Workbench\u2122 is our proprietary annotation environment built for research-grade tasks. It supports RLHF preference ranking, SFT demonstrations, safety red-teaming, evaluation benchmarks, and custom schemas — with configurable annotator depth per task.',
       points: [
-        { icon: Users, label: 'Triple-blind annotation', text: 'Each sample is independently evaluated by 3 domain experts. Annotators never see each other\'s labels. We compute Krippendorff\'s α, Cohen\'s κ, and Fleiss\' κ across every batch — and share the raw IAA scores with you.' },
-        { icon: Microscope, label: 'Expertise-matched routing', text: 'A cardiology question goes to MDs with cardiology training, not a general practitioner. A derivatives pricing task goes to CFA charterholders, not MBA generalists. Our routing engine matches task taxonomy to annotator credentials at the sub-domain level.' },
-        { icon: BookOpen, label: 'Adjudication protocol', text: 'When annotators disagree, we don\'t majority-vote. A senior domain expert (typically faculty-level) reviews the disputed sample, writes a justification, and renders a final label. Every adjudication is logged and shipped with your data.' },
-        { icon: BarChart3, label: 'Real-time quality monitoring', text: 'Our internal dashboard tracks per-annotator accuracy, inter-rater agreement drift, and label distribution skew across batches. If agreement drops below threshold, we pause, recalibrate, and re-annotate the affected batch.' },
+        { icon: Users, label: 'Configurable annotation modes', text: 'Solo Expert: single credentialed annotator for high-throughput labeling. Multi-Blind: 2\u20137+ independent annotators per sample with no label visibility between them. Tiered Review: junior annotators label, senior domain experts audit, faculty-level adjudicators resolve edge cases. You set the annotator count per task — or let our routing engine auto-assign based on task complexity.' },
+        { icon: Microscope, label: 'Expertise-matched routing', text: 'A cardiology question goes to MDs with cardiology training, not a general practitioner. A derivatives pricing task goes to CFA charterholders, not MBA generalists. Our routing engine matches task taxonomy to annotator credentials at the sub-domain level — powered by RawEval ExpertGraph\u2122.' },
+        { icon: BookOpen, label: 'Adjudication protocol', text: 'When annotators disagree, we don\u2019t majority-vote. A senior domain expert (typically faculty-level) reviews the disputed sample, writes a justification, and renders a final label. Every adjudication is logged and shipped with your data.' },
+        { icon: AlertTriangle, label: 'Red-teaming & adversarial evaluation', text: 'For safety and alignment work, our annotators systematically probe for model vulnerabilities \u2014 jailbreaks, harmful completions, refusal failures, and cultural insensitivity. Exploit categories are tracked and categorized across sessions via Workbench\u2122\u2019s adversarial module.' },
       ],
-      footnote: 'Average inter-annotator agreement across projects: κ = 0.87. Less than 8% of applicants are accepted into our annotator network.',
+      footnote: 'Less than 8% of applicants are accepted. Average inter-annotator agreement: \u03ba\u2009=\u20090.87.',
     },
   },
   {
-    num: '03', title: 'Delivery & provenance', icon: FileText, tag: 'Research-ready output',
-    desc: 'Clean annotated datasets with full provenance chains, IAA reports, and annotator credential metadata.',
+    num: '03', title: 'Autoreview & QA', icon: ScanSearch, tag: 'Sentinel\u2122',
+    desc: 'Every label runs through Sentinel\u2122 \u2014 automated quality gates, honeypot scoring, per-annotator trust tracking, and model-assisted consistency checks.',
+    detail: {
+      heading: 'RawEval Sentinel\u2122',
+      intro: 'Human expertise alone isn\u2019t enough at scale. Sentinel\u2122 is our automated review engine that runs quality checks on every annotation \u2014 per-annotator, per-batch, and project-wide \u2014 before anything reaches your training data.',
+      points: [
+        { icon: Sparkles, label: 'Model-in-the-loop validation', text: 'A secondary model cross-checks every human annotation for internal consistency, schema compliance, and label-rationale alignment. Flagged samples are re-routed for human re-evaluation \u2014 not silently corrected. Sentinel\u2122 never overrides human judgment; it surfaces what needs a second look.' },
+        { icon: Fingerprint, label: 'Honeypot injection & TrustScore\u2122', text: 'Expert-labeled ground-truth samples are injected into every queue without annotators\u2019 knowledge. Per-annotator accuracy is continuously scored against these hidden benchmarks into a rolling TrustScore\u2122. Annotators who drift below threshold are paused and recalibrated \u2014 automatically.' },
+        { icon: RefreshCw, label: 'Drift detection & recalibration', text: 'Sentinel\u2122 monitors inter-rater agreement, label distribution skew, and per-annotator accuracy trends across batches in real time. If quality metrics drift below project thresholds, the batch is paused, the team recalibrated, and affected samples re-annotated.' },
+        { icon: BarChart3, label: 'Accord\u2122 consensus engine', text: 'Accord\u2122 computes per-sample consensus across all annotators \u2014 whether that\u2019s 2 or 12. Outlier annotations are flagged, reviewed, and either adjudicated or re-queued. Works across single-expert, multi-blind, and tiered review modes. You receive full transparency into agreement breakdowns \u2014 no black-box quality scores.' },
+      ],
+      footnote: 'Sentinel\u2122 catches an average of 12% of annotations that would otherwise require post-hoc correction.',
+    },
+  },
+  {
+    num: '04', title: 'Delivery & provenance', icon: FileText, tag: 'Research-ready output',
+    desc: 'Training-ready datasets with full Sentinel\u2122 audit trails, IAA reports, TrustScore\u2122 breakdowns, and annotator credential metadata.',
     detail: {
       heading: 'What You Receive',
-      intro: 'You don\'t get a CSV of labels. You get a complete provenance package designed to be cited in publications, attached to model cards, and audited by reviewers.',
+      intro: 'You don\u2019t get a CSV of labels. You get a complete provenance package \u2014 designed to feed directly into your RLHF, SFT, or evaluation pipeline, attach to model cards, and hold up under peer review. Every metric is traceable back to the annotator, the quality gate, and the guideline version that produced it.',
       points: [
-        { icon: FileText, label: 'Annotation package', text: 'Final labels in your preferred format (JSONL, Parquet, HuggingFace Dataset). Every row includes: annotator pseudonym, timestamp, confidence score, and free-text rationale where applicable.' },
-        { icon: FlaskConical, label: 'IAA & quality report', text: 'A PDF report with inter-annotator agreement metrics (Krippendorff\'s α, Fleiss\' κ), confusion matrices, label distribution analysis, and a breakdown of adjudicated disagreements. Ready to drop into a paper\'s appendix.' },
+        { icon: FileText, label: 'Annotation package', text: 'Final labels in your preferred format (JSONL, Parquet, HuggingFace Dataset). Every row includes: annotator pseudonym, TrustScore\u2122 at time of annotation, timestamp, confidence score, and free-text rationale. Preference pairs are margin-gated for reward model training.' },
+        { icon: FlaskConical, label: 'Sentinel\u2122 quality report', text: 'A detailed report with inter-annotator agreement metrics, confusion matrices, label distribution analysis, Sentinel\u2122 autoreview pass rates, TrustScore\u2122 distributions, and a full breakdown of adjudicated disagreements. Ready to plug into your training pipeline or drop into a paper\u2019s appendix.' },
         { icon: Shield, label: 'Annotator credential sheet', text: 'Anonymized credential metadata for each annotator: degree level, institution tier, years of domain experience, h-index range, and relevant publication count. Reviewers can verify expertise without compromising annotator identity.' },
-        { icon: Layers, label: 'Annotation guidelines & changelog', text: 'The full guideline document used by annotators, including edge-case rulings and any mid-project refinements. Versioned so you can trace exactly what instructions produced each label.' },
+        { icon: Layers, label: 'Guidelines, changelog & audit trail', text: 'The full guideline document, edge-case rulings, mid-project refinements, Sentinel\u2122 configuration, and Accord\u2122 consensus thresholds. Versioned so you can trace exactly what instructions and quality gates produced each label.' },
       ],
-      footnote: 'Typical turnaround: 7–14 days for 1,000 samples. Expedited delivery available.',
+      footnote: 'Typical turnaround: 7\u201314 days for 1,000 samples. Expedited delivery and continuous pipeline integrations available.',
     },
   },
 ];
@@ -279,13 +295,13 @@ function Pipeline() {
           </div>
           <p style={{
             fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)',
-            margin: '0 0 var(--space-8)', maxWidth: 520, lineHeight: 'var(--leading-relaxed)',
+            margin: '0 0 var(--space-8)', maxWidth: 580, lineHeight: 'var(--leading-relaxed)',
           }}>
-            A research-grade annotation pipeline built for teams that need more than crowdworker labels. Click any step to see the details.
+            A research-grade annotation pipeline powered by Workbench™, Sentinel™ autoreview, and Accord™ consensus — built for AI labs that need configurable annotator depth, per-annotator trust scoring, and training-ready provenance. Click any step to see the details.
           </p>
         </ScrollReveal>
 
-        <div className="grid-cols-3-md" style={{ gap: 'var(--space-4)' }}>
+        <div className="grid-cols-2-md" style={{ gap: 'var(--space-4)' }}>
           {STEPS.map((step, i) => (
             <ScrollReveal key={step.num} delay={i * 100}>
               <button
@@ -342,7 +358,7 @@ function Pipeline() {
 
         <ScrollReveal delay={200}>
           <div style={{ marginTop: 'var(--space-6)', display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {['SOC 2 Type II', 'ISO 27001', 'HIPAA BAA', 'GDPR', 'Per-project NDA'].map((b) => (
+            {['SOC 2 Type II', 'ISO 27001', 'ISO 42001', 'HIPAA BAA', 'GDPR', 'Air-gapped deploy', 'Per-project NDA'].map((b) => (
               <span key={b} style={{
                 fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)',
                 letterSpacing: 'var(--tracking-wide)', padding: '4px 10px',
