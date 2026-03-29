@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
+
+const LOGO_FILTER = 'brightness(0) saturate(100%) invert(55%) sepia(82%) saturate(2200%) hue-rotate(344deg) brightness(105%) contrast(96%)';
 
 export function Footer() {
   return (
@@ -17,7 +20,8 @@ export function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-2)' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', color: 'var(--color-signal)', fontWeight: 500, letterSpacing: 'var(--tracking-wide)' }}>RawEval</span>
+              <Image src="/logo.png" alt="RawEval" width={90} height={26}
+                style={{ filter: LOGO_FILTER }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)', letterSpacing: 'var(--tracking-wider)' }}>RESEARCH</span>
             </Link>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--color-text-muted)', margin: 0, maxWidth: 260 }}>
@@ -30,7 +34,7 @@ export function Footer() {
             <FooterCol title="Company">
               <Link href="/experts" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Our Experts</Link>
               <a href="/#contact" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Contact</a>
-              <a href="mailto:research@raweval.com" className="footer-link" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>research@raweval.com</a>
+              <a href="mailto:contact@raweval.com" className="footer-link" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>contact@raweval.com</a>
             </FooterCol>
             <FooterCol title="Domains">
               <Link href="/domains/healthcare" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Healthcare</Link>

@@ -2,17 +2,17 @@
 
 const INSTITUTIONS: { name: string; short: string; logo?: string }[] = [
   { name: 'IIT Bombay', short: 'IITB', logo: '/logos/iit-bombay.svg' },
+  { name: 'IIM Ahmedabad', short: 'IIMA', logo: '/logos/iim-ahmedabad.svg' },
+  { name: 'AIIMS Delhi', short: 'AIIMS', logo: '/logos/aiims-delhi.svg' },
   { name: 'IIT Delhi', short: 'IITD', logo: '/logos/iit-delhi.svg' },
+  { name: 'ISB Hyderabad', short: 'ISB', logo: '/logos/isb-hyderabad.png' },
   { name: 'IIT Madras', short: 'IITM', logo: '/logos/iit-madras.svg' },
+  { name: 'IIM Bangalore', short: 'IIMB', logo: '/logos/iim-bangalore.svg' },
   { name: 'IIT Kanpur', short: 'IITK', logo: '/logos/iit-kanpur.svg' },
+  { name: 'NLU Delhi', short: 'NLU', logo: '/logos/nlu-delhi.png' },
   { name: 'IIT Kharagpur', short: 'IITKgp', logo: '/logos/iit-kharagpur.svg' },
+  { name: 'CMC Vellore', short: 'CMC', logo: '/logos/cmc-vellore.png' },
   { name: 'IIT Hyderabad', short: 'IITH', logo: '/logos/iit-hyderabad.svg' },
-  { name: 'IIM Ahmedabad', short: 'IIMA' },
-  { name: 'IIM Bangalore', short: 'IIMB' },
-  { name: 'AIIMS Delhi', short: 'AIIMS' },
-  { name: 'NLU Delhi', short: 'NLU' },
-  { name: 'ISB Hyderabad', short: 'ISB' },
-  { name: 'CMC Vellore', short: 'CMC' },
 ];
 
 function Chip({ name, short, logo }: { name: string; short: string; logo?: string }) {

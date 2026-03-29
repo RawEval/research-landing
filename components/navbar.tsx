@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+
+const LOGO_FILTER = 'brightness(0) saturate(100%) invert(55%) sepia(82%) saturate(2200%) hue-rotate(344deg) brightness(105%) contrast(96%)';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -30,21 +33,15 @@ export function Navbar() {
 
         {/* Brand */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)',
-            color: 'var(--color-signal)', fontWeight: 500, letterSpacing: 'var(--tracking-wide)',
-          }}>RawEval</span>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '10px',
-            color: 'var(--color-text-faint)', letterSpacing: 'var(--tracking-wider)',
-          }}>RESEARCH</span>
+          <Image src="/logo.png" alt="RawEval" width={96} height={28}
+            style={{ filter: LOGO_FILTER }} />
         </Link>
 
         {/* Links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-5)' }}>
           <Link href="/experts" className="nav-link" style={{ display: 'none' }}>Our Experts</Link>
           <style>{`@media (min-width: 640px) { nav .nav-link { display: block !important; } }`}</style>
-          <a href="/#contact" className="btn-primary" style={{ fontSize: 'var(--text-xs)', padding: '9px 20px' }}>
+          <a href="/#contact" className="btn-nav-cta">
             Get in Touch
           </a>
         </div>

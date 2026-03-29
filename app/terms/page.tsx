@@ -100,7 +100,7 @@ export default function TermsPage() {
             Ground Floor &amp; 1st Floor, Incubex HSR23<br />
             19th Main Rd, HSR Layout, Sector 4<br />
             Bengaluru, Karnataka 560102<br />
-            <a href="mailto:research@raweval.com" style={{ color: 'var(--color-signal)' }}>research@raweval.com</a>
+            <a href="mailto:contact@raweval.com" style={{ color: 'var(--color-signal)' }}>contact@raweval.com</a>
           </Section>
         </div>
       </div>

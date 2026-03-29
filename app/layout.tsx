@@ -3,6 +3,7 @@ import { DM_Mono, Instrument_Serif } from 'next/font/google';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { PageTransition } from '@/components/page-transition';
+import { SmoothScroll } from '@/components/smooth-scroll';
 import './globals.css';
 
 const dmMono = DM_Mono({
@@ -30,8 +31,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${dmMono.variable} ${instrumentSerif.variable}`}>
+        <SmoothScroll />
         <Navbar />
         <main id="main-content" style={{ paddingTop: 'var(--nav-height)' }}>
           <PageTransition>

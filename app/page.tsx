@@ -94,11 +94,11 @@ function Hero() {
         display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexWrap: 'wrap',
         animation: 'fade-up 0.6s ease-out 0.3s forwards', opacity: 0,
       }}>
-        <a href="#contact" className="btn-primary" style={{ padding: '14px 28px', fontSize: 'var(--text-sm)' }}>
+        <a href="#contact" className="btn-primary" style={{ padding: '14px 32px', fontSize: 'var(--text-sm)' }}>
           Get Your Data Annotated <ArrowRight size={16} />
         </a>
-        <Link href="/experts" className="btn-secondary" style={{ padding: '14px 28px', fontSize: 'var(--text-sm)' }}>
-          View Expert Network
+        <Link href="/experts" className="btn-secondary" style={{ padding: '14px 32px', fontSize: 'var(--text-sm)' }}>
+          View Expert Network <ArrowRight size={14} />
         </Link>
       </div>
 
@@ -323,6 +323,7 @@ function Contact() {
   const [form, setForm] = useState({ name: '', email: '', org: '', message: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const update = (f: string, v: string) => setForm((p) => ({ ...p, [f]: v }));
   const canSend = form.name.trim() && form.email.trim() && form.org.trim();
@@ -330,9 +331,27 @@ function Contact() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setSending(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setSending(false);
-    setSent(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'Something went wrong. Please try again.');
+        return;
+      }
+
+      setSent(true);
+    } catch {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setSending(false);
+    }
   }
 
   const input: React.CSSProperties = {
@@ -346,13 +365,33 @@ function Contact() {
     return (
       <section id="contact" style={{ padding: 'var(--space-20) var(--section-x)', borderTop: '1px solid var(--color-border)' }}>
         <div style={{ maxWidth: 'min(420px, 100%)', margin: '0 auto', textAlign: 'center' }}>
-          <CheckCircle2 size={32} style={{ color: 'var(--color-signal)', marginBottom: 'var(--space-4)' }} />
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', color: 'var(--color-text-primary)', margin: '0 0 var(--space-2)' }}>
-            We&apos;ll be in touch
+          <div style={{
+            width: 56, height: 56, borderRadius: '50%', margin: '0 auto var(--space-5)',
+            background: 'var(--color-signal-subtle)', border: '1px solid var(--color-signal-border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <CheckCircle2 size={24} style={{ color: 'var(--color-signal)' }} />
+          </div>
+          <h3 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)',
+            color: 'var(--color-text-primary)', margin: '0 0 var(--space-2)',
+          }}>
+            Message sent
           </h3>
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', margin: 0 }}>
-            Thanks, {form.name.split(' ')[0]}. Expect to hear from us within 48 hours.
+          <p style={{
+            fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)',
+            margin: '0 0 var(--space-5)', lineHeight: 'var(--leading-relaxed)',
+          }}>
+            Thanks, {form.name.split(' ')[0]}. We&apos;ll get back to you within 24 hours.
           </p>
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-faint)',
+            letterSpacing: 'var(--tracking-wide)',
+            padding: '6px 14px', borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--color-border)', background: 'var(--color-bg-surface)',
+          }}>
+            Check your inbox for a confirmation
+          </span>
         </div>
       </section>
     );
@@ -394,6 +433,15 @@ function Contact() {
               <Label text="What are you working on?" />
               <textarea value={form.message} onChange={(e) => update('message', e.target.value)} rows={3} placeholder="Brief description" style={{ ...input, resize: 'vertical', minHeight: 72 }} />
             </div>
+            {error && (
+              <div style={{
+                fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)',
+                color: '#ef4444', padding: '8px 12px',
+                background: 'rgba(239,68,68,0.1)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(239,68,68,0.2)',
+              }}>{error}</div>
+            )}
             <button type="submit" className="btn-primary" disabled={!canSend || sending} style={{
               width: '100%', padding: '12px', fontSize: 'var(--text-sm)',
               opacity: (!canSend || sending) ? 0.5 : 1,
