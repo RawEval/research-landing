@@ -211,10 +211,16 @@ function Hero() {
 function Marquee() {
   return (
     <div style={{
-      padding: 'var(--space-4) 0',
+      padding: 'var(--space-6) 0 var(--space-4)',
       borderTop: '1px solid var(--color-border)',
       borderBottom: '1px solid var(--color-border)',
     }}>
+      <p style={{
+        fontFamily: 'var(--font-mono)', fontSize: '10px',
+        letterSpacing: 'var(--tracking-wider)', textTransform: 'uppercase',
+        color: 'var(--color-text-faint)', textAlign: 'center',
+        margin: '0 0 var(--space-4)',
+      }}>Our experts come from</p>
       <InstitutionRibbon />
     </div>
   );
