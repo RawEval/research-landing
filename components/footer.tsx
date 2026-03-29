@@ -1,79 +1,80 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-const LOGO_FILTER = 'brightness(0) saturate(100%) invert(55%) sepia(82%) saturate(2200%) hue-rotate(344deg) brightness(105%) contrast(96%)';
+const DOMAIN_LINKS = [
+  { href: '/domains/healthcare', label: 'Healthcare' },
+  { href: '/domains/finance', label: 'Finance' },
+  { href: '/domains/legal', label: 'Legal' },
+  { href: '/domains/technology', label: 'Technology' },
+];
+
+const COMPANY_LINKS = [
+  { href: '/experts', label: 'Our Experts' },
+  { href: '/#contact', label: 'Contact' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+];
 
 export function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)' }}>
-      <div style={{
-        maxWidth: 'var(--max-content)', margin: '0 auto',
-        padding: 'var(--space-10) var(--section-x) var(--space-8)',
-      }}>
-        {/* Top */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-          flexWrap: 'wrap', gap: 'var(--space-8)',
-          marginBottom: 'var(--space-8)', paddingBottom: 'var(--space-6)',
-          borderBottom: '1px solid var(--color-border)',
-        }}>
-          {/* Brand */}
-          <div>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 'var(--space-2)' }}>
-              <Image src="/logo.png" alt="RawEval" width={90} height={26}
-                style={{ filter: LOGO_FILTER }} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)', letterSpacing: 'var(--tracking-wider)' }}>RESEARCH</span>
-            </Link>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--color-text-muted)', margin: 0, maxWidth: 260 }}>
-              Expert-annotated AI evaluation data.
-            </p>
-          </div>
-
-          {/* Links */}
-          <div className="footer-links" style={{ display: 'flex', gap: 'var(--space-10)', flexWrap: 'wrap' }}>
-            <FooterCol title="Company">
-              <Link href="/experts" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Our Experts</Link>
-              <a href="/#contact" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Contact</a>
-              <a href="mailto:contact@raweval.com" className="footer-link" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>contact@raweval.com</a>
-            </FooterCol>
-            <FooterCol title="Domains">
-              <Link href="/domains/healthcare" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Healthcare</Link>
-              <Link href="/domains/finance" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Finance</Link>
-              <Link href="/domains/legal" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Legal</Link>
-              <Link href="/domains/technology" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Technology</Link>
-            </FooterCol>
-            <FooterCol title="Legal">
-              <Link href="/privacy" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Privacy Policy</Link>
-              <Link href="/terms" className="footer-link" style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-xs)' }}>Terms of Service</Link>
-            </FooterCol>
-          </div>
+    <footer>
+      {/* ── Signal CTA band ── */}
+      <div className="footer-cta">
+        <div className="footer-cta-inner">
+          <h2 className="footer-cta-heading">
+            Ready to elevate your<br />AI evaluation?
+          </h2>
+          <p className="footer-cta-sub">
+            Join leading AI labs using expert-annotated data.
+          </p>
+          <a href="/#contact" className="footer-cta-btn">
+            Get in Touch <ArrowRight size={14} />
+          </a>
         </div>
+      </div>
 
-        {/* Bottom */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          flexWrap: 'wrap', gap: 'var(--space-3)',
-        }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--color-text-faint)' }}>
-            Bengaluru, India
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-faint)' }}>
-            &copy; {new Date().getFullYear()} RawEval Inc.
-          </span>
+      {/* ── Main footer ── */}
+      <div className="footer-main">
+        <div className="footer-main-inner">
+          <div className="footer-brand-row">
+            {/* Brand */}
+            <div className="footer-brand-block">
+              <Link href="/" className="footer-wordmark">RawEval</Link>
+              <p className="footer-tagline">
+                Expert-annotated evaluation data<br />
+                for AI that demands rigour.
+              </p>
+              <a href="mailto:contact@raweval.com" className="footer-email">
+                contact@raweval.com
+                <ArrowUpRight size={11} />
+              </a>
+            </div>
+
+            {/* Link columns */}
+            <div className="footer-cols">
+              <div className="footer-col">
+                <span className="footer-col-title">Domains</span>
+                {DOMAIN_LINKS.map(({ href, label }) => (
+                  <Link key={href} href={href} className="footer-link">{label}</Link>
+                ))}
+              </div>
+              <div className="footer-col">
+                <span className="footer-col-title">Company</span>
+                {COMPANY_LINKS.map(({ href, label }) => (
+                  <Link key={href} href={href} className="footer-link">{label}</Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="footer-divider" />
+          <div className="footer-bottom">
+            <span className="footer-copy">&copy; {new Date().getFullYear()} RawEval Inc.</span>
+            <span className="footer-location">Bengaluru, India</span>
+          </div>
         </div>
       </div>
     </footer>
-  );
-}
-
-function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <span style={{
-        fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: 'var(--tracking-wider)',
-        textTransform: 'uppercase', color: 'var(--color-text-faint)', marginBottom: 2,
-      }}>{title}</span>
-      {children}
-    </div>
   );
 }

@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, Shield, FlaskConical, CheckCircle2,
   Activity, FileText, Users, Loader2, Send,
   Stethoscope, TrendingUp, Scale, Cpu, GraduationCap,
+  X, Upload, ClipboardCheck, BarChart3, GitBranch,
+  Layers, Target, Microscope, BookOpen,
 } from 'lucide-react';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { InstitutionRibbon } from '@/components/institution-logos';
 import { ExpertApplyButton } from '@/components/expert-modal';
+import { useLenis } from '@/components/smooth-scroll';
 
 /* ================================================================== */
 /* DATA                                                                */
@@ -22,10 +25,59 @@ const DOMAINS = [
   { slug: 'technology', name: 'Technology', icon: Cpu, experts: '25+', sub: 'IIT faculty, ML researchers & senior engineers' },
 ];
 
-const STEPS = [
-  { num: '01', title: 'Share your data', desc: 'Send us model outputs or evaluation benchmarks — or use our existing datasets.', icon: Activity },
-  { num: '02', title: 'Expert evaluation', desc: 'IIT/IIM faculty and domain specialists evaluate through structured rubrics.', icon: Users },
-  { num: '03', title: 'Get results', desc: 'Clean annotated data with full provenance — any format, research-ready.', icon: FileText },
+const STEPS: {
+  num: string; title: string; desc: string; icon: typeof Activity;
+  tag: string; detail: {
+    heading: string; intro: string;
+    points: { icon: typeof Activity; label: string; text: string }[];
+    footnote: string;
+  };
+}[] = [
+  {
+    num: '01', title: 'Ingest & scope', icon: Upload, tag: 'Data onboarding',
+    desc: 'Send model outputs, evaluation benchmarks, or raw corpora. We design the annotation schema with you.',
+    detail: {
+      heading: 'Data Onboarding',
+      intro: 'We don\'t just take your data and run. Every engagement starts with a scoping call where we align on taxonomy, edge-case definitions, and success metrics before a single label is placed.',
+      points: [
+        { icon: Layers, label: 'Format-agnostic intake', text: 'JSONL, Parquet, CSV, PDF corpora, API exports — we normalize everything into our internal pipeline. No reformatting on your end.' },
+        { icon: GitBranch, label: 'Schema co-design', text: 'Our ontology team builds custom annotation guidelines with you — Likert scales, pairwise preference, span-level tagging, or multi-dimensional rubrics. We iterate until the guideline document passes a pilot round with ≥0.85 inter-annotator agreement.' },
+        { icon: Shield, label: 'Security & compliance', text: 'Data lands in SOC 2 Type II compliant infrastructure. HIPAA BAA and mutual NDA executed before any data transfer. All annotators sign per-project confidentiality agreements.' },
+        { icon: Target, label: 'Pilot calibration', text: 'Before full annotation begins, we run a 50–100 sample pilot. Annotators are calibrated against gold-standard labels and each other. Only annotators who pass the calibration threshold proceed.' },
+      ],
+      footnote: 'Average onboarding time: 3–5 business days from data receipt to first annotated batch.',
+    },
+  },
+  {
+    num: '02', title: 'Expert annotation', icon: ClipboardCheck, tag: 'Multi-pass evaluation',
+    desc: 'Domain PhDs evaluate through structured rubrics — multi-annotator, calibrated, with real-time disagreement resolution.',
+    detail: {
+      heading: 'How We Annotate',
+      intro: 'This is where we\'re fundamentally different. Every sample passes through a multi-stage pipeline designed for research-grade reliability — not crowdworker speed.',
+      points: [
+        { icon: Users, label: 'Triple-blind annotation', text: 'Each sample is independently evaluated by 3 domain experts. Annotators never see each other\'s labels. We compute Krippendorff\'s α, Cohen\'s κ, and Fleiss\' κ across every batch — and share the raw IAA scores with you.' },
+        { icon: Microscope, label: 'Expertise-matched routing', text: 'A cardiology question goes to MDs with cardiology training, not a general practitioner. A derivatives pricing task goes to CFA charterholders, not MBA generalists. Our routing engine matches task taxonomy to annotator credentials at the sub-domain level.' },
+        { icon: BookOpen, label: 'Adjudication protocol', text: 'When annotators disagree, we don\'t majority-vote. A senior domain expert (typically faculty-level) reviews the disputed sample, writes a justification, and renders a final label. Every adjudication is logged and shipped with your data.' },
+        { icon: BarChart3, label: 'Real-time quality monitoring', text: 'Our internal dashboard tracks per-annotator accuracy, inter-rater agreement drift, and label distribution skew across batches. If agreement drops below threshold, we pause, recalibrate, and re-annotate the affected batch.' },
+      ],
+      footnote: 'Average inter-annotator agreement across projects: κ = 0.87. Less than 8% of applicants are accepted into our annotator network.',
+    },
+  },
+  {
+    num: '03', title: 'Delivery & provenance', icon: FileText, tag: 'Research-ready output',
+    desc: 'Clean annotated datasets with full provenance chains, IAA reports, and annotator credential metadata.',
+    detail: {
+      heading: 'What You Receive',
+      intro: 'You don\'t get a CSV of labels. You get a complete provenance package designed to be cited in publications, attached to model cards, and audited by reviewers.',
+      points: [
+        { icon: FileText, label: 'Annotation package', text: 'Final labels in your preferred format (JSONL, Parquet, HuggingFace Dataset). Every row includes: annotator pseudonym, timestamp, confidence score, and free-text rationale where applicable.' },
+        { icon: FlaskConical, label: 'IAA & quality report', text: 'A PDF report with inter-annotator agreement metrics (Krippendorff\'s α, Fleiss\' κ), confusion matrices, label distribution analysis, and a breakdown of adjudicated disagreements. Ready to drop into a paper\'s appendix.' },
+        { icon: Shield, label: 'Annotator credential sheet', text: 'Anonymized credential metadata for each annotator: degree level, institution tier, years of domain experience, h-index range, and relevant publication count. Reviewers can verify expertise without compromising annotator identity.' },
+        { icon: Layers, label: 'Annotation guidelines & changelog', text: 'The full guideline document used by annotators, including edge-case rulings and any mid-project refinements. Versioned so you can trace exactly what instructions produced each label.' },
+      ],
+      footnote: 'Typical turnaround: 7–14 days for 1,000 samples. Expedited delivery available.',
+    },
+  },
 ];
 
 /* ================================================================== */
@@ -209,6 +261,8 @@ function Domains() {
 /* ================================================================== */
 
 function Pipeline() {
+  const [openStep, setOpenStep] = useState<number | null>(null);
+
   return (
     <section id="pipeline" style={{
       padding: 'var(--space-16) var(--section-x)',
@@ -216,42 +270,79 @@ function Pipeline() {
     }}>
       <div style={{ maxWidth: 'var(--max-content)', margin: '0 auto' }}>
         <ScrollReveal>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 'var(--space-8)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 'var(--space-3)' }}>
             <div style={{ width: 20, height: 1, background: 'var(--color-signal)' }} />
             <span style={{
               fontFamily: 'var(--font-mono)', fontSize: '11px',
               letterSpacing: 'var(--tracking-wider)', textTransform: 'uppercase', color: 'var(--color-signal)',
             }}>How It Works</span>
           </div>
+          <p style={{
+            fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)',
+            margin: '0 0 var(--space-8)', maxWidth: 520, lineHeight: 'var(--leading-relaxed)',
+          }}>
+            A research-grade annotation pipeline built for teams that need more than crowdworker labels. Click any step to see the details.
+          </p>
         </ScrollReveal>
 
         <div className="grid-cols-3-md" style={{ gap: 'var(--space-4)' }}>
-          {STEPS.map(({ num, title, desc, icon: Icon }, i) => (
-            <ScrollReveal key={num} delay={i * 100}>
-              <div style={{
-                padding: 'var(--space-6)', background: 'var(--color-bg-muted)',
-                border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', height: '100%',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: 'var(--color-signal-subtle)', border: '1px solid var(--color-signal-border)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <Icon size={14} style={{ color: 'var(--color-signal)' }} />
+          {STEPS.map((step, i) => (
+            <ScrollReveal key={step.num} delay={i * 100}>
+              <button
+                onClick={() => setOpenStep(i)}
+                style={{
+                  all: 'unset', boxSizing: 'border-box', cursor: 'pointer', width: '100%',
+                  padding: 'var(--space-6)', background: 'var(--color-bg-muted)',
+                  border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)',
+                  display: 'flex', flexDirection: 'column', height: '100%',
+                  transition: 'border-color 0.2s ease, background 0.2s ease',
+                }}
+                className="pipeline-card"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-4)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: '50%',
+                      background: 'var(--color-signal-subtle)', border: '1px solid var(--color-signal-border)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <step.icon size={16} style={{ color: 'var(--color-signal)' }} />
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)', letterSpacing: 'var(--tracking-wider)' }}>
+                      STEP {step.num}
+                    </span>
                   </div>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)', letterSpacing: 'var(--tracking-wider)' }}>{num}</span>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--color-signal)',
+                    letterSpacing: 'var(--tracking-wide)', opacity: 0.7,
+                    padding: '3px 8px', borderRadius: 'var(--radius-full)',
+                    border: '1px solid var(--color-signal-border)',
+                  }}>{step.tag}</span>
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)', color: 'var(--color-text-primary)', fontWeight: 500, margin: '0 0 var(--space-2)' }}>{title}</h3>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', lineHeight: 'var(--leading-relaxed)', margin: 0 }}>{desc}</p>
-              </div>
+                <h3 style={{
+                  fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)',
+                  color: 'var(--color-text-primary)', fontWeight: 500,
+                  margin: '0 0 var(--space-2)', textAlign: 'left',
+                }}>{step.title}</h3>
+                <p style={{
+                  fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-muted)', lineHeight: 'var(--leading-relaxed)',
+                  margin: '0 0 var(--space-4)', textAlign: 'left', flex: 1,
+                }}>{step.desc}</p>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-text-faint)',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  Learn more <ArrowRight size={12} />
+                </span>
+              </button>
             </ScrollReveal>
           ))}
         </div>
 
         <ScrollReveal delay={200}>
           <div style={{ marginTop: 'var(--space-6)', display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {['SOC 2', 'ISO 27001', 'HIPAA', 'GDPR', 'NDA'].map((b) => (
+            {['SOC 2 Type II', 'ISO 27001', 'HIPAA BAA', 'GDPR', 'Per-project NDA'].map((b) => (
               <span key={b} style={{
                 fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)',
                 letterSpacing: 'var(--tracking-wide)', padding: '4px 10px',
@@ -261,7 +352,133 @@ function Pipeline() {
           </div>
         </ScrollReveal>
       </div>
+
+      {openStep !== null && (
+        <PipelineModal step={STEPS[openStep]!} onClose={() => setOpenStep(null)} />
+      )}
     </section>
+  );
+}
+
+function PipelineModal({ step, onClose }: { step: typeof STEPS[number]; onClose: () => void }) {
+  const lenis = useLenis();
+
+  useEffect(() => {
+    lenis.stop();
+    document.body.style.overflow = 'hidden';
+    return () => {
+      lenis.start();
+      document.body.style.overflow = '';
+    };
+  }, [lenis]);
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 100,
+        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 'var(--space-4)', animation: 'fade-in 0.15s ease-out',
+        overflowY: 'auto',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: 'min(600px, 100%)', maxHeight: '90vh', overflowY: 'auto',
+          background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-xl)', position: 'relative',
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: 'var(--space-5) var(--space-6)',
+          borderBottom: '1px solid var(--color-border)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          position: 'sticky', top: 0, background: 'var(--color-bg-surface)',
+          borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0', zIndex: 2,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'var(--color-signal-subtle)', border: '1px solid var(--color-signal-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <step.icon size={16} style={{ color: 'var(--color-signal)' }} />
+            </div>
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-body)', fontSize: 'var(--text-base)',
+                color: 'var(--color-text-primary)', fontWeight: 500,
+              }}>{step.detail.heading}</div>
+              <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--color-text-faint)',
+                letterSpacing: 'var(--tracking-wide)', marginTop: 1,
+              }}>STEP {step.num} — {step.tag.toUpperCase()}</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--color-text-muted)', borderRadius: 'var(--radius-sm)',
+          }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: 'var(--space-6)' }}>
+          <p style={{
+            fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)',
+            color: 'var(--color-text-secondary)', lineHeight: 'var(--leading-relaxed)',
+            margin: '0 0 var(--space-6)',
+          }}>
+            {step.detail.intro}
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            {step.detail.points.map((pt) => (
+              <div key={pt.label} style={{
+                padding: 'var(--space-4) var(--space-5)',
+                background: 'var(--color-bg-muted)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                  <pt.icon size={14} style={{ color: 'var(--color-signal)', flexShrink: 0 }} />
+                  <span style={{
+                    fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)',
+                    color: 'var(--color-text-primary)', fontWeight: 500,
+                  }}>{pt.label}</span>
+                </div>
+                <p style={{
+                  fontFamily: 'var(--font-body)', fontSize: '13px',
+                  color: 'var(--color-text-muted)', lineHeight: 'var(--leading-relaxed)',
+                  margin: 0,
+                }}>
+                  {pt.text}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop: 'var(--space-5)', padding: 'var(--space-3) var(--space-4)',
+            borderRadius: 'var(--radius-md)', background: 'var(--color-signal-subtle)',
+            border: '1px solid var(--color-signal-border)',
+          }}>
+            <p style={{
+              fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--color-signal)',
+              margin: 0, letterSpacing: 'var(--tracking-wide)',
+            }}>
+              {step.detail.footnote}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

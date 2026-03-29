@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { useLenis } from '@/components/smooth-scroll';
 
 const ROLES = [
   'Professor / Associate Professor',
@@ -49,6 +50,17 @@ export function ExpertApplyButton() {
 }
 
 function ExpertModal({ onClose }: { onClose: () => void }) {
+  const lenis = useLenis();
+
+  useEffect(() => {
+    lenis.stop();
+    document.body.style.overflow = 'hidden';
+    return () => {
+      lenis.start();
+      document.body.style.overflow = '';
+    };
+  }, [lenis]);
+
   const [form, setForm] = useState({
     name: '', email: '', institution: '', role: '',
     department: '', domain: '', scholar: '', hIndex: '', bio: '',
@@ -69,20 +81,10 @@ function ExpertModal({ onClose }: { onClose: () => void }) {
 
   return createPortal(
     <div
-      style={{
-        position: 'fixed', inset: 0, zIndex: 100,
-        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: 'var(--space-4)',
-      }}
+      className="expert-modal-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{
-        width: '100%', maxWidth: 'min(520px, 100%)', maxHeight: '92vh', overflowY: 'auto',
-        background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-xl)', position: 'relative',
-        margin: '0 var(--space-2)',
-      }}>
+      <div className="expert-modal-panel">
         {/* Header */}
         <div style={{
           padding: 'var(--space-5) var(--space-6)',

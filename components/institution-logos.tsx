@@ -15,25 +15,21 @@ const INSTITUTIONS: { name: string; short: string; logo?: string }[] = [
   { name: 'IIT Hyderabad', short: 'IITH', logo: '/logos/iit-hyderabad.svg' },
 ];
 
-function Chip({ name, short, logo }: { name: string; short: string; logo?: string }) {
+function LogoMark({ name, short, logo }: { name: string; short: string; logo?: string }) {
   return (
-    <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: 6,
-      padding: '0 20px', whiteSpace: 'nowrap', flexShrink: 0,
-    }}>
-      {logo ? (
-        <img src={logo} alt="" width={18} height={18}
-          style={{ width: 18, height: 18, objectFit: 'contain', filter: 'brightness(1.1)', opacity: 0.7 }} />
-      ) : (
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 600,
-          color: 'var(--color-signal)', opacity: 0.6,
-        }}>{short}</span>
-      )}
-      <span style={{
-        fontFamily: 'var(--font-mono)', fontSize: '11px',
-        color: 'var(--color-text-faint)', fontWeight: 500,
-      }}>{name}</span>
+    <div className="inst-mark">
+      <div className="inst-mark-icon">
+        {logo ? (
+          <img src={logo} alt={name} width={36} height={36}
+            style={{ width: 36, height: 36, objectFit: 'contain' }} />
+        ) : (
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 700,
+            color: 'var(--color-signal)',
+          }}>{short}</span>
+        )}
+      </div>
+      <span className="inst-mark-name">{name}</span>
     </div>
   );
 }
@@ -43,7 +39,7 @@ export function InstitutionRibbon() {
     <div className="ribbon-wrap">
       <div className="ribbon-track">
         {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, i) => (
-          <Chip key={`${inst.short}-${i}`} {...inst} />
+          <LogoMark key={`${inst.short}-${i}`} {...inst} />
         ))}
       </div>
     </div>

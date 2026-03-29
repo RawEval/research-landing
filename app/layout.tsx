@@ -33,14 +33,15 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${dmMono.variable} ${instrumentSerif.variable}`}>
-        <SmoothScroll />
-        <Navbar />
-        <main id="main-content" style={{ paddingTop: 'var(--nav-height)' }}>
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </main>
-        <Footer />
+        <SmoothScroll>
+          <Navbar />
+          <main id="main-content" style={{ paddingTop: 'var(--nav-height)' }}>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );

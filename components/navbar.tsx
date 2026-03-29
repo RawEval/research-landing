@@ -44,6 +44,7 @@ export function Navbar() {
           <a href="/#contact" className="btn-nav-cta">
             Get in Touch
           </a>
+          
         </div>
       </nav>
     </header>
